@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FinHer - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: #f4f6f5; color: #1a1a1a; }
+        nav {
+            background: #0b3d3a; color: white; padding: 18px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        nav h1 { font-size: 22px; font-weight: 800; }
+        nav h1 span { color: #e8b84b; }
+        nav a { color: #f4f6f5; text-decoration: none; font-size: 14px; margin-left: 20px; }
+        nav a:hover { color: #e8b84b; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); margin-bottom: 25px; }
+        h2 { color: #0b3d3a; margin-bottom: 5px; }
+        .subtitle { color: #666; font-size: 14px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left; padding: 10px 8px; font-size: 12px; color: #999;
+            text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #eee;
+        }
+        td { padding: 12px 8px; border-bottom: 1px solid #f2f2f2; font-size: 14px; }
+        .role-badge {
+            padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;
+        }
+        .admin-badge { background: #e8b84b22; color: #b8860b; }
+        .user-badge { background: #0b3d3a15; color: #0b3d3a; }
+        .metric-row { display: flex; gap: 20px; margin-bottom: 10px; flex-wrap: wrap; }
+        .metric-box {
+            flex: 1; min-width: 150px; background: #0b3d3a08; border-radius: 10px;
+            padding: 18px 20px; text-align: center;
+        }
+        .metric-box .num { font-size: 24px; font-weight: 800; color: #0b3d3a; }
+        .metric-box .label { font-size: 12px; color: #777; margin-top: 4px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <nav>
+       <a href="{{ url_for('home') }}" style="text-decoration:none;"><h1>Fin<span>Her</span></h1></a>
+        <div>
+        <span style="background:#0b3d3a22; color:#0b3d3a; padding:3px 10px; border-radius:12px; font-size:12px; font-weight:600; margin-right:10px;">SYSTEM ADMIN</span>
+<a href="{{ url_for('dashboard') }}">Lender Dashboard</a>
+<a href="{{ url_for('fairness_check') }}">Fairness Check</a>
+<a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2><i class="fa-solid fa-gauge-high"></i> Model Monitoring</h2>
+            <p class="subtitle">Health of the FinHer scoring engine (FR 6.2)</p>
+            <div class="metric-row">
+                <div class="metric-box">
+                    <div class="num">Logistic Regression</div>
+                    <div class="label">Model Type</div>
+                </div>
+                <div class="metric-box">
+                    <div class="num">6</div>
+                    <div class="label">Input Features</div>
+                </div>
+                <div class="metric-box">
+                    <div class="num">Active</div>
+                    <div class="label">Status</div>
+                </div>
+            </div>
+            <p style="font-size:13px; color:#888; margin-top:10px;">
+                Full accuracy/AUC-ROC metrics are printed at training time (see <code>train_model.py</code> output).
+            </p>
+        </div>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-users"></i> User Management</h2>
+            <p class="subtitle">Registered platform users (FR 6.1)</p>
+            <table>
+                <tr><th>ID</th><th>Username</th><th>Role</th></tr>
+                {% for u in users %}
+                <tr>
+                    <td>{{ u[0] }}</td>
+                    <td>{{ u[1] }}</td>
+                    <td>
+                        {% if u[2] %}
+                        <span class="role-badge admin-badge">Admin</span>
+                        {% else %}
+                        <span class="role-badge user-badge">Lender Admin</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-clock-rotate-left"></i> Audit Log</h2>
+            <p class="subtitle">Recent scoring events (FR 6.3) &mdash; most recent 20</p>
+            <table>
+                <tr><th>Log ID</th><th>Applicant</th><th>Score</th><th>Date</th></tr>
+                {% for log in audit_log %}
+                <tr>
+                    <td>{{ log[0] }}</td>
+                    <td>{{ log[1] }}</td>
+                    <td>{{ log[2] }}</td>
+                    <td>{{ log[3] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+</html>

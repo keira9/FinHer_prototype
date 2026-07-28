@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FinHer - Score Detail</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: #f4f6f5; color: #1a1a1a; }
+        nav {
+            background: #0b3d3a; color: white; padding: 18px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        nav h1 { font-size: 22px; font-weight: 800; }
+        nav h1 span { color: #e8b84b; }
+        nav a { color: #f4f6f5; text-decoration: none; font-size: 14px; margin-left: 20px; }
+        nav a:hover { color: #e8b84b; }
+        .container { max-width: 700px; margin: 40px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        .back { color: #666; font-size: 14px; text-decoration: none; }
+        .back:hover { color: #0b3d3a; }
+    </style>
+</head>
+<body>
+    <nav>
+       <a href="{{ url_for('home') }}" style="text-decoration:none;"><h1>Fin<span>Her</span></h1></a>
+        <div><a href="{{ url_for('dashboard') }}">Dashboard</a><a href="{{ url_for('logout') }}">Logout</a></div>
+    </nav>
+    <div class="container">
+        {% set band = 'Excellent' if score.final_score >= 700 else ('Good' if score.final_score >= 550 else ('Fair' if score.final_score >= 400 else 'Poor')) %}
+        {% set color = '#1e824c' if score.final_score >= 700 else ('#2e86c1' if score.final_score >= 550 else ('#e8b84b' if score.final_score >= 400 else '#c0392b')) %}
+        <div class="card">
+            <a href="{{ url_for('dashboard') }}" class="back">← Back to Dashboard</a>
+            <h2 style="color:#0b3d3a; margin:15px 0 5px;">{{ entrepreneur[0] }}</h2>
+            <p style="color:#666; margin-bottom:25px;">
+                <i class="fa-solid fa-location-dot"></i> {{ entrepreneur[1] }} &nbsp;·&nbsp;
+                <i class="fa-solid fa-briefcase"></i> {{ entrepreneur[2] }}
+            </p>
+
+            <div style="background:{{ color }}15; border-radius:10px; padding:25px; margin-bottom:25px;">
+                <p style="font-size:13px; color:#666; text-transform:uppercase;">FinHer Score</p>
+                <p style="font-size:42px; font-weight:800; color:{{ color }};">{{ score.final_score }}</p>
+                <span style="background:{{ color }}; color:white; padding:4px 14px; border-radius:20px; font-size:13px; font-weight:600;">{{ band }}</span>
+            </div>
+
+            <h3 style="color:#0b3d3a; margin-bottom:15px; font-size:16px;">Score Breakdown</h3>
+
+            <div style="margin-bottom:18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; margin-bottom:6px;">
+                    <span><i class="fa-solid fa-mobile-screen-button" style="color:#0b3d3a; width:18px;"></i> Mobile Money Transactions</span>
+                    <span style="font-weight:600;">{{ score.transaction_score }}</span>
+                </div>
+                <div style="background:#eee; border-radius:10px; height:8px;">
+                    <div style="background:#0b3d3a; width:{{ score.transaction_score }}%; max-width:100%; height:8px; border-radius:10px;"></div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:18px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; margin-bottom:6px;">
+                    <span><i class="fa-solid fa-people-group" style="color:#0b3d3a; width:18px;"></i> SACCO Membership (months)</span>
+                    <span style="font-weight:600;">{{ score.sacco_score }}</span>
+                </div>
+                <div style="background:#eee; border-radius:10px; height:8px;">
+                    <div style="background:#0b3d3a; width:{{ score.sacco_score }}%; max-width:100%; height:8px; border-radius:10px;"></div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:14px; margin-bottom:6px;">
+                    <span><i class="fa-solid fa-store" style="color:#0b3d3a; width:18px;"></i> Informal Trade Frequency</span>
+                    <span style="font-weight:600;">{{ score.trade_score }}</span>
+                </div>
+                <div style="background:#eee; border-radius:10px; height:8px;">
+                    <div style="background:#0b3d3a; width:{{ [score.transaction_score * 8, 100] | min }}%; height:8px; border-radius:10px;"></div>
+                </div>
+            </div>
+        </div>
+      <div style="margin-top:25px; padding-top:20px; border-top:1px solid #eee;">
+    <h3 style="color:#0b3d3a; margin-bottom:15px; font-size:16px;">Credit Decision</h3>
+
+    {% if latest_decision %}
+        {% set d = latest_decision[0] %}
+        {% set d_color = '#1e824c' if d == 'Approved' else ('#c0392b' if d == 'Rejected' else '#e8b84b') %}
+        <div style="background:{{ d_color }}15; border-left:4px solid {{ d_color }}; padding:14px 18px; border-radius:6px; margin-bottom:15px;">
+            <p style="font-weight:700; color:{{ d_color }}; font-size:15px;">{{ d }}</p>
+            <p style="font-size:13px; color:#666; margin-top:3px;">Decided by {{ latest_decision[1] }} on {{ latest_decision[2].strftime('%d %b %Y, %H:%M') }}</p>
+        </div>
+    {% endif %}
+
+    <div style="display:flex; gap:10px;">
+        <a href="{{ url_for('make_decision', eid=eid, decision='Approved') }}"
+           style="background:#1e824c; color:white; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:600; font-size:14px;">
+           Approve
+        </a>
+        <a href="{{ url_for('make_decision', eid=eid, decision='Deferred') }}"
+           style="background:#e8b84b; color:white; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:600; font-size:14px;">
+           Defer
+        </a>
+        <a href="{{ url_for('make_decision', eid=eid, decision='Rejected') }}"
+           style="background:#c0392b; color:white; padding:10px 20px; border-radius:6px; text-decoration:none; font-weight:600; font-size:14px;">
+           Reject
+        </a>
+    </div>
+</div>
+    </div>
+</body>
+</html>

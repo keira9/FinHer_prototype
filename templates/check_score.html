@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FinHer - Check My Score</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: #f4f6f5; color: #1a1a1a; }
+        nav {
+            background: #0b3d3a; color: white; padding: 18px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        nav h1 { font-size: 22px; font-weight: 800; }
+        nav h1 span { color: #e8b84b; }
+        nav a { color: #f4f6f5; text-decoration: none; font-size: 14px; }
+        nav a:hover { color: #e8b84b; }
+        .container { max-width: 550px; margin: 50px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        input {
+            width: 100%; padding: 12px; margin: 8px 0 16px; border: 1px solid #ddd;
+            border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;
+        }
+        button {
+            width: 100%; padding: 12px; background: #0b3d3a; color: white; border: none;
+            border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer;
+        }
+        button:hover { background: #0a2f2c; }
+        .error { color: #c0392b; font-size: 14px; margin-bottom: 10px; }
+        .success-banner {
+            background: #1e824c15; border-left: 4px solid #1e824c; padding: 14px 18px;
+            border-radius: 6px; margin-bottom: 20px; color: #1e824c; font-weight: 600; font-size: 14px;
+        }
+        .bar-track { background: #eee; border-radius: 10px; height: 8px; }
+        .bar-fill { background: #0b3d3a; height: 8px; border-radius: 10px; }
+        .row-label { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 6px; }
+        .apply-btn {
+            display: inline-block; background: #e8b84b; color: #1a1a1a; padding: 12px 24px;
+            border-radius: 6px; text-decoration: none; font-weight: 700; font-size: 15px; margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+       <a href="{{ url_for('home') }}" style="text-decoration:none;"><h1>Fin<span>Her</span></h1></a>
+        <a href="{{ url_for('home') }}">← Back Home</a>
+    </nav>
+
+    <div class="container">
+        {% if request.args.get('applied') %}
+        <div class="success-banner">
+            <i class="fa-solid fa-circle-check"></i> Your loan application has been submitted! A lender will review your FinHer Score soon.
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <h2 style="color:#0b3d3a; margin-bottom:5px;">Check Your FinHer Score</h2>
+            <div class="card">
+    <h2 style="color:#0b3d3a; margin-bottom:5px;">Check Your FinHer Score</h2>
+    <p style="text-align:center; margin-bottom:15px; font-size:14px;">
+        New here? <a href="{{ url_for('register_borrower') }}" style="color:#0b3d3a; font-weight:600;">Register your business →</a>
+    </p>
+    <p style="color:#666; font-size:14px; margin-bottom:20px;">Enter your registered phone number to view your score.</p>
+            <p style="color:#666; font-size:14px; margin-bottom:20px;">Enter your registered phone number to view your score.</p>
+
+            <form method="POST">
+                <label style="font-size:13px; color:#555;">Phone Number</label>
+                <input type="text" name="phone" placeholder="e.g. 0788123456" required>
+                <button type="submit">View My Score</button>
+            </form>
+
+            {% if error %}
+            <p class="error" style="margin-top:15px;">{{ error }}</p>
+            {% endif %}
+
+            {% if result %}
+            {% set s = result.score %}
+            {% set band = 'Excellent' if s.final_score >= 700 else ('Good' if s.final_score >= 550 else ('Fair' if s.final_score >= 400 else 'Poor')) %}
+            {% set color = '#1e824c' if s.final_score >= 700 else ('#2e86c1' if s.final_score >= 550 else ('#e8b84b' if s.final_score >= 400 else '#c0392b')) %}
+
+            <div style="margin-top:25px; padding-top:20px; border-top:1px solid #eee;">
+                <h3 style="color:#0b3d3a;">Hello, {{ result.name }} 👋</h3>
+                <p style="color:#666; font-size:13px; margin-bottom:15px;">{{ result.location }} · {{ result.business_type }}</p>
+
+                <div style="background:{{ color }}15; border-radius:10px; padding:20px; margin-bottom:20px;">
+                    <p style="font-size:12px; color:#666; text-transform:uppercase;">Your FinHer Score</p>
+                    <p style="font-size:38px; font-weight:800; color:{{ color }};">{{ s.final_score }}</p>
+                    <span style="background:{{ color }}; color:white; padding:4px 14px; border-radius:20px; font-size:13px; font-weight:600;">{{ band }}</span>
+                </div>
+
+                <p style="font-size:13px; color:#555; margin-bottom:15px; line-height:1.5;">
+                    {% if band == 'Excellent' %}
+                    Great news! Your consistent mobile money activity, savings history, and trading show strong financial reliability.
+                    {% elif band == 'Good' %}
+                    You're doing well. Keep building your savings consistency and transaction history to improve further.
+                    {% elif band == 'Fair' %}
+                    You're on the right track. Try increasing your SACCO contributions and mobile money activity over time.
+                    {% else %}
+                    Your score can improve. Regular saving through a SACCO and consistent mobile money use are great first steps.
+                    {% endif %}
+                </p>
+
+                <a href="{{ url_for('apply_for_loan', eid=result.eid) }}" class="apply-btn">Apply for a Loan →</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

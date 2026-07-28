@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}FinHer - Sign Up{% endblock %}
+{% block content %}
+<div class="card" style="max-width:400px; margin:60px auto;">
+    <h2 style="margin-bottom:20px; color:#0b3d3a;">Create Your Account</h2>
+    {% if error %}<p style="color:#c0392b; margin-bottom:15px;">{{ error }}</p>{% endif %}
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required
+            style="width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:6px;">
+        <input type="password" name="password" placeholder="Password" required
+            style="width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:6px;">
+        <button type="submit"
+            style="width:100%;padding:12px;margin-top:10px;background:#0b3d3a;color:white;border:none;border-radius:6px;font-size:15px;cursor:pointer;">
+            Sign Up
+        </button>
+    </form>
+    <p style="margin-top:20px; font-size:14px; color:#666;">
+        Already have an account? <a href="{{ url_for('login') }}" style="color:#0b3d3a;font-weight:600;">Login</a>
+    </p>
+</div>
+{% endblock %}

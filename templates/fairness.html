@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FinHer - Fairness Check</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: #f4f6f5; color: #1a1a1a; }
+        nav {
+            background: #0b3d3a; color: white; padding: 18px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        nav h1 { font-size: 22px; font-weight: 800; }
+        nav h1 span { color: #e8b84b; }
+        nav a { color: #f4f6f5; text-decoration: none; font-size: 14px; margin-left: 20px; }
+        nav a:hover { color: #e8b84b; }
+        .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .card { background: white; border-radius: 10px; padding: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th {
+            text-align: left; padding: 10px 8px; font-size: 12px; color: #999;
+            text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #eee;
+        }
+        td { padding: 12px 8px; border-bottom: 1px solid #f2f2f2; font-size: 14px; }
+        .bar-track { background: #eee; border-radius: 8px; height: 10px; width: 150px; }
+        .bar-fill { background: #0b3d3a; height: 10px; border-radius: 8px; }
+        .overall-box {
+            background: #0b3d3a08; border-radius: 10px; padding: 18px 20px; text-align: center; margin-bottom: 20px;
+        }
+        .overall-box .num { font-size: 28px; font-weight: 800; color: #0b3d3a; }
+        .overall-box .label { font-size: 12px; color: #777; text-transform: uppercase; margin-top: 4px; }
+        .note { font-size: 13px; color: #888; margin-top: 20px; line-height: 1.5; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('home') }}" style="text-decoration:none;"><h1>Fin<span>Her</span></h1></a>
+        <div>
+            <a href="{{ url_for('admin') }}">Admin</a>
+            <a href="{{ url_for('dashboard') }}">Lender Dashboard</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2 style="color:#0b3d3a; margin-bottom:5px;"><i class="fa-solid fa-scale-balanced"></i> Fairness Check</h2>
+            <p style="color:#666; font-size:14px; margin-bottom:20px;">Average FinHer Score by location &mdash; a proxy check for regional bias (FR 6.2)</p>
+
+            <div class="overall-box">
+                <div class="num">{{ overall_avg }}</div>
+                <div class="label">Overall Average Score</div>
+            </div>
+
+            <table>
+                <tr><th>Location</th><th>Applicants</th><th>Average Score</th><th>Spread</th></tr>
+                {% for row in fairness_data %}
+                <tr>
+                    <td style="font-weight:600;">{{ row.location }}</td>
+                    <td>{{ row.count }}</td>
+                    <td>{{ row.avg_score }}</td>
+                    <td>
+                        <div class="bar-track">
+                            <div class="bar-fill" style="width:{{ (row.avg_score / 850 * 100) | round(1) }}%;"></div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+
+            <p class="note">
+                This view compares average scores across locations to check that no single region is being
+                systematically under- or over-scored by the model &mdash; a simplified stand-in for the
+                demographic fairness monitoring described in the SRS (NFR 1, FR 6.2). A production system would
+                extend this to formal statistical parity and equal opportunity metrics across protected groups.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

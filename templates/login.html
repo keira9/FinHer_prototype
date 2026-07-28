@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}FinHer - Login{% endblock %}
+{% block content %}
+<div class="card" style="max-width:400px; margin:60px auto;">
+    <h2 style="margin-bottom:20px; color:#0b3d3a;">Welcome to FinHer</h2>
+    <p style="color:#666; margin-bottom:25px; font-size:14px;">Sign in to view creditworthiness scores.</p>
+    {% if error %}<p style="color:#c0392b; margin-bottom:15px;">{{ error }}</p>{% endif %}
+    <form method="POST">
+        <input type="text" name="username" placeholder="Username" required
+            style="width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:6px;">
+        <input type="password" name="password" placeholder="Password" required
+            style="width:100%;padding:12px;margin:6px 0;border:1px solid #ddd;border-radius:6px;">
+        <button type="submit"
+            style="width:100%;padding:12px;margin-top:10px;background:#0b3d3a;color:white;border:none;border-radius:6px;font-size:15px;cursor:pointer;">
+            Login
+        </button>
+    </form>
+    <p style="margin-top:20px; font-size:14px; color:#666;">
+        Don't have an account? <a href="{{ url_for('signup') }}" style="color:#0b3d3a;font-weight:600;">Sign up</a>
+    </p>
+</div>
+{% endblock %}
