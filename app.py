@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import psycopg2
+import os
 from datetime import date
 from werkzeug.security import generate_password_hash, check_password_hash
 
