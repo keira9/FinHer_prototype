@@ -7,16 +7,22 @@ import joblib
 model = joblib.load("finher_model.pkl")
 scaler = joblib.load("finher_scaler.pkl")
 app = Flask(__name__)
-app.secret_key = "finher_secret_key_change_this"
+app.secret_key = os.environ.get("SECRET_KEY", "finher_secret_key_change_this")
+
+import os
 
 def get_connection():
-    return psycopg2.connect(
-        dbname="FinHer",
-        user="postgres",
-        password="Ngabonziza@12345",
-        host="localhost",
-        port="5432"
-    )
+    database_url = os.environ.get("DATABASE_URL")
+    if database_url:
+        return psycopg2.connect(database_url)
+    else:
+        return psycopg2.connect(
+            dbname="FinHer",
+            user="postgres",
+            password="Ngabonziza@12345",
+            host="localhost",
+            port="5432"
+        )
 
 def calculate_score(entrepreneur_id):
     conn = get_connection()
@@ -123,6 +129,7 @@ def login():
 def logout():
     session.pop("username", None)
     return redirect(url_for("login"))
+
 @app.route("/decide/<int:eid>/<decision>")
 def make_decision(eid, decision):
     if "username" not in session:
@@ -223,6 +230,7 @@ def add_activity(eid):
     score = calculate_score(eid)
 
     return render_template("add_activity.html", eid=eid, name=name, score=score)
+
 @app.route("/check-score", methods=["GET", "POST"])
 def check_score():
     result = None
@@ -409,6 +417,7 @@ def dashboard():
     conn.close()
 
     return render_template("dashboard.html", entrepreneurs=data, username=session["username"], is_admin=is_admin)
+
 @app.route("/entrepreneur/<int:eid>")
 def entrepreneur_detail(eid):
     if "username" not in session:
